@@ -1,6 +1,6 @@
 # SimpleRouter-php
 
-Te permitirá crear un routing de la forma mas facil posible, recibiendo todo lo enviado por un usuario a través de un callback.
+Te permitirá crear un routing de la forma mas fácil posible, recibiendo todo lo enviado por un usuario a través de un callback.
 
 Primero necesitas redireccionar cualquier petición con nuestro archivo de configuración .htaccess de ejemplo:
 
@@ -11,7 +11,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Importa la libreria con "require 'dir';"
+Importa la libreria.
 
 ```php
   require "./PhpRouter.php";
@@ -22,11 +22,13 @@ Crea una nueva instancia de la clase
   $api = new PhpRouter();
 ```
 Ahora puedes usar la api, llamando a la variable donde guardaste la instancia y usar uno de sus metodos:
+
 post, get, put, delete.
 
 Si usas un servidor local necesitas asignar toda la ruta seguido de lo que necesitas.
-desde xampp ignorando htdocs
-desde wampp ignorando www
+
+desde xampp ignorando htdocs,
+desde wampp ignorando www,
 desde laragon ignorando www
 
 teniendo el archivo principal dentro de una carpeta dentro de htdocs.
