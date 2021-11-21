@@ -1,12 +1,12 @@
 <?php
     class PhpRouter{
-        public $status = false;
+        private $status = false;
 
         public function start(){
             if($this->status == false){
                 echo json_encode(array(
                     "code" => 0,
-                    "message" => "No hay una ruta disponible, a la que intentas acceder"
+                    "message" => "Cannot {{".$_SERVER['REQUEST_METHOD']."}} in this root"
                 ));
             }
         }
