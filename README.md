@@ -25,20 +25,10 @@ Ahora puedes usar la api, llamando a la variable donde guardaste la instancia y 
 
 post, get, put, delete.
 
-Si usas un servidor local necesitas asignar toda la ruta seguido de lo que necesitas.
-
-desde xampp ignorando htdocs,
-desde wampp ignorando www,
-desde laragon ignorando www
-
 teniendo el archivo principal dentro de una carpeta dentro de htdocs.
 
 ```php
-    //C:\xampp\htdocs\Prueba\ -> /Prueba/ejemplo
-    //C:\wampp\www\Prueba\ -> /Prueba/ejemplo
-    //C:\laragon\www\Prueba\ -> /Prueba/ejemplo
-
-    $api->post("/Prueba/ejemplo/{numero}", function($req){
+    $api->post("/ejemplo/{numero}", function($req){
         echo json_encode($req);
     });
 ```
