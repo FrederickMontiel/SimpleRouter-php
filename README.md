@@ -47,7 +47,7 @@ Codigo de ejemplo:
     header("Content-Type: application/json");
 
     $api = new PhpRouter();
-    $api->post("/Prueba/ejemplo/{numero}", function($req){
+    $api->post("/ejemplo/{numero}", function($req){
         echo json_encode($req);
     });
 
