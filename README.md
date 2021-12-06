@@ -25,7 +25,7 @@ Ahora puedes usar la api, llamando a la variable donde guardaste la instancia y 
 
 post, get, put, delete.
 
-teniendo el archivo principal dentro de una carpeta dentro de htdocs.
+Imagina que he creado una carpeta llamada Prueba dentro de www/htdocs/public_html y dentro de ella el archivo index.php con el respectivo htaccess.
 
 ```php
     $api->post("/ejemplo/{numero}", function($req){
