@@ -38,11 +38,17 @@
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
                 $req['body'] = $_POST;
+
                 $callback($req);
             }
         }
 
         private function sanitizeRoots($metodo, $root){
+            $directory = explode("/", $_SERVER['PHP_SELF']);
+            unset($directory[count($directory) - 1]);
+            
+            $directory = implode("/", $directory);
+            $root = $directory.$root;
             $uri = $_SERVER['REQUEST_URI'];
             $uriDos = $_SERVER['REQUEST_URI'];
             $method = $_SERVER['REQUEST_METHOD'];
@@ -74,7 +80,6 @@
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
                 $req['body'] = $_GET;
 
-                
                 $callback($req);
             }
         }
