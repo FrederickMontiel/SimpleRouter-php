@@ -13,7 +13,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Codigo de ejemplo con PhpStorm:
+Codigo de ejemplo:
 
 ```php
 <?php
@@ -41,11 +41,9 @@ Codigo de ejemplo con PhpStorm:
         $res->status(200)->send($req);
     });
     
-    //required
+    //Verifica si llegó se realizó una peticion a una ruta.
     $api->start();
 ```
-
-Codigo de ejemplo sin Visual Studio con el plugin "PhpInteliphence":
 
 ![image](https://user-images.githubusercontent.com/86737117/144947334-5f09b150-5ec4-481c-9dfd-bc09592c7250.png)
 
