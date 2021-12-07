@@ -7,10 +7,10 @@
         public function start(){
             if($this->status == false){
                 $res = new Response();
-                $res->status(200)->send(json_encode(array(
+                $res->status(200)->send(array(
                     "code" => 0,
                     "message" => "Cannot {{".$_SERVER['REQUEST_METHOD']."}} in this root"
-                )));
+                ));
             }
         }
 
