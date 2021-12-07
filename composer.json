@@ -1,0 +1,15 @@
+{
+    "name": "easy-projects/simple-router",
+    "description": "Libreria para crear rutas en php.",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "EasyProjects\\SimpleRouter\\": "src/"
+        }
+    },
+    "authors": [{
+        "name": "Frederick Montiel",
+        "email": "fmontiel@easyprojects.tech"
+    }],
+    "require": {}
+}
