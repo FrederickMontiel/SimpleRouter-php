@@ -96,7 +96,7 @@
         }
 
         public function delete($root, $callback){
-            $$sanitized = $this->sanitizeRoots("DELETE", $root);
+            $sanitized = $this->sanitizeRoots("DELETE", $root);
             if($sanitized != false){
                 parse_str(file_get_contents('php://input'), $_DELETE);
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
