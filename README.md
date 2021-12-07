@@ -41,7 +41,7 @@ Codigo de ejemplo:
         $res->status(200)->send($req);
     });
     
-    //Verifica si llegó se realizó una peticion a una ruta.
+    //Verifica si se realizó una peticion a alguna ruta. (Esto es requerido)
     $api->start();
 ```
 
