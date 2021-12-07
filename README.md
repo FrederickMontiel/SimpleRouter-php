@@ -1,8 +1,10 @@
 # SimpleRouter-php
 
-Te permitirá crear un routing de la forma mas fácil posible, recibiendo todo lo enviado por un usuario a través de un callback.
-
-Primero necesitas redireccionar cualquier petición con nuestro archivo de configuración .htaccess de ejemplo:
+Instala nuestro paquete con composer:
+```txt
+composer require easy-projects/simple-router
+```
+Debes redireccionar toda solicitud hacia tu archivo principal con este .htaccess o como puedes visualizar en la carpeta de ejemplo "example".
 
 ```txt
 RewriteEngine On
@@ -11,48 +13,46 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]
 ```
 
-Importa la libreria.
+Codigo de ejemplo con PhpStorm:
 
 ```php
-  require "./PhpRouter.php";
-```
-Crea una nueva instancia de la clase
+<?php
+    //Incluye el autoload de composer
+    include_once __DIR__."/vendor/autoload.php";
 
-```php
-  $api = new PhpRouter();
-```
-Ahora puedes usar la api, llamando a la variable donde guardaste la instancia y usar uno de sus metodos:
+    use EasyProjects\SimpleRouter\Router as Router;
+    use EasyProjects\SimpleRouter\Request as Request;
+    use EasyProjects\SimpleRouter\Response as Response;
 
-post, get, put, delete.
-
-Imagina que he creado una carpeta llamada Prueba dentro de www/htdocs/public_html y dentro de ella el archivo index.php con el respectivo htaccess.
-
-```php
-    $api->post("/ejemplo/{numero}", function($req){
-        echo json_encode($req);
+    $api = new Router();
+    $api->get("/imprimir", function(Request $req, Response $res){
+        $res->status(200)->send($req);
     });
-```
-
-Al final de tu aplicación necesitas usar este metodo para la verificación de la utilización de alguna ruta.
-
-```php
-     $api->start();
-```
-
-Codigo de ejemplo:
-
-```php
-  <?php
-    require "./PhpRouter.php";
-    header("Content-Type: application/json");
-
-    $api = new PhpRouter();
-    $api->post("/ejemplo/{numero}", function($req){
-        echo json_encode($req);
+    
+    $api->post("/imprimir", function(Request $req, Response $res){
+        $res->status(200)->send($req);
     });
 
+    $api->put("/imprimir", function(Request $req, Response $res){
+        $res->status(200)->send($req);
+    });
+
+    $api->delete("/imprimir", function(Request $req, Response $res){
+        $res->status(200)->send($req);
+    });
+    
+    //required
     $api->start();
 ```
 
-Respuesta en la variable $req
-![image](https://user-images.githubusercontent.com/86737117/142752088-0e94f513-8db0-4156-8049-eee29a2c2f2a.png)
+Codigo de ejemplo sin Visual Studio con el plugin "PhpInteliphence":
+
+![image](https://user-images.githubusercontent.com/86737117/144947334-5f09b150-5ec4-481c-9dfd-bc09592c7250.png)
+
+# ¿Cómo funciona?
+
+Se compone de 3 clases, Router, Request, Response.
+
+Router es la clase global para poder diseñar las rutas, puedes poner distintos metodos: get, post, put, delete.
+Request contiene los datos enviados por el navegador del ciente o el cliente en general, (Parametros de url o formulario, y los headers).
+Response contiene dos metodos, status para enviar un codigo de respuesta (404, 500, 403), send() envia de respuesta cualquier objeto en un json.
