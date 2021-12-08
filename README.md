@@ -41,11 +41,11 @@ Codigo de ejemplo:
         $res->status(200)->send($req);
     });
 
-    $api->put("/imprimir", function(Request $req, Response $res){
+    $api->put("/imprimir/{idUsuario}", function(Request $req, Response $res){
         $res->status(200)->send($req);
     });
 
-    $api->delete("/imprimir", function(Request $req, Response $res){
+    $api->delete("/imprimir/{idUsuario}", function(Request $req, Response $res){
         $res->status(200)->send($req);
     });
     
