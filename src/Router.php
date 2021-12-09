@@ -1,8 +1,11 @@
 <?php
     namespace EasyProjects\SimpleRouter;
 
+    use Exception;
+
     class Router{
         private $status = false;
+        private $input = false;
 
         public function start(){
             if($this->status == false){
@@ -30,6 +33,12 @@
 
             $req['params'] = $params;
             $req['headers'] = getallheaders();
+
+            if(isset($req['headers']['Content-Type']) == "application/json"){
+                try{
+                    $this->input = json_decode(file_get_contents("php://input"), true);
+                }catch(Exception $e){}
+            }
 
             $this->status = true;
             
@@ -71,8 +80,11 @@
             $sanitized = $this->sanitizeRoots("GET", $root);
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-
-                $callback(new Request($_GET, $req['params'], $req['headers']), new Response);
+                if($this->input == false){
+                    $callback(new Request($_GET, $req['params'], $req['headers']), new Response);
+                }else{
+                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                }
             }
         }
 
@@ -82,26 +94,38 @@
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
                 $req['body'] = $_POST;
 
-                $callback(new Request($_POST, $req['params'], $req['headers']), new Response);
+                if($this->input == false){
+                    $callback(new Request($_POST, $req['params'], $req['headers']), new Response);
+                }else{
+                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                }
             }
         }
 
         public function put($root, $callback){
             $sanitized = $this->sanitizeRoots("PUT", $root);
             if($sanitized != false){
-                parse_str(file_get_contents('php://input'), $_PUT);
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-                $callback(new Request($_PUT, $req['params'], $req['headers']), new Response);
+                if($this->input == false){
+                    parse_str(file_get_contents('php://input'), $_PUT);
+                    $callback(new Request($_PUT, $req['params'], $req['headers']), new Response);
+                }else{
+                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                }
             }
         }
 
         public function delete($root, $callback){
             $sanitized = $this->sanitizeRoots("DELETE", $root);
             if($sanitized != false){
-                parse_str(file_get_contents('php://input'), $_DELETE);
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
 
-                $callback(new Request($_DELETE, $req['params'], $req['headers']), new Response);
+                if($this->input == false){
+                    parse_str(file_get_contents('php://input'), $_DELETE);
+                    $callback(new Request($_DELETE, $req['params'], $req['headers']), new Response);
+                }else{
+                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                }
             }
         }
 
