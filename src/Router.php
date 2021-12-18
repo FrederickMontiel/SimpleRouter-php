@@ -17,7 +17,7 @@
             }
         }
 
-        private function cors($domain = "*", $methods = "*", $headers = "*"){
+        public function cors($domain = "*", $methods = "*", $headers = "*"){
             header("Access-Control-Allow-Origin: ".$domain);
             header("Access-Control-Allow-Methods: ".$headers);
             header("Access-Control-Allow-Headers: ".$headers);
