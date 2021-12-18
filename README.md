@@ -25,7 +25,7 @@ Codigo de ejemplo:
 
 ```php
 <?php
-    //Incluye el autoload de composer
+    //Include composer
     include_once __DIR__."/vendor/autoload.php";
 
     use EasyProjects\SimpleRouter\Router as Router;
@@ -33,11 +33,16 @@ Codigo de ejemplo:
     use EasyProjects\SimpleRouter\Response as Response;
 
     $api = new Router();
+    
+    //If you need allow petitions from javascript, use
+    $api->cors();
+    
     $api->get("/imprimir", function(Request $req, Response $res){
         $res->status(200)->send($req);
     });
     
     $api->post("/imprimir", function(Request $req, Response $res){
+        //Get Files
         $res->status(200)->send($req);
     });
 
@@ -49,8 +54,17 @@ Codigo de ejemplo:
         $res->status(200)->send($req);
     });
     
-    //Verifica si se realizó una peticion a alguna ruta. (Esto es requerido)
+    //REQUIRED
     $api->start();
+```
+
+Now if you need get Files Uploaded, use:
+Si necesitas obtener archivos subidos usa:
+
+```php
+    $api->post("/upload/folder/{idFolder}", function(Request $req, Response $res){
+        $res->status(200)->send($req->files);
+    });
 ```
 
 ![image](https://user-images.githubusercontent.com/86737117/144947334-5f09b150-5ec4-481c-9dfd-bc09592c7250.png)
