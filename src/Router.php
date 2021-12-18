@@ -6,15 +6,22 @@
     class Router{
         private $status = false;
         private $input = false;
+        private $isUsed = false;
 
         public function start(){
             if($this->status == false){
                 $res = new Response();
                 $res->status(200)->send(array(
                     "code" => 0,
-                    "message" => "Cannot {{".$_SERVER['REQUEST_METHOD']."}} in this root"
+                    "message" => "The petition {{".$_SERVER['REQUEST_METHOD']."}} in this root not exists"
                 ));
             }
+        }
+
+        private function cors($domain = "*", $methods = "*", $headers = "*"){
+            header("Access-Control-Allow-Origin: ".$domain);
+            header("Access-Control-Allow-Methods: ".$headers);
+            header("Access-Control-Allow-Headers: ".$headers);
         }
 
         private function WriteRoot($root, $regex, $uri){
@@ -46,6 +53,9 @@
         }
 
         private function sanitizeRoots($metodo, $root){
+            if(!$this->isUsed){
+                
+            }
             $directory = explode("/", $_SERVER['PHP_SELF']);
             unset($directory[count($directory) - 1]);
             
@@ -70,6 +80,7 @@
             $regex = preg_replace("/\{(.*?)\}/", "(.*?)", str_replace("/", "\/", $root));
 
             if($method == $metodo && count(explode("/", $root)) == count(explode("/", $uri)) && preg_match("/".$regex."$/im", $uriDos)){
+                
                 return array("regex" => $regex, "uri" => $uriDos);
             }else{
                 return false;
