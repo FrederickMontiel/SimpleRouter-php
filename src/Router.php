@@ -6,7 +6,6 @@
     class Router{
         private $status = false;
         private $input = false;
-        private $isUsed = false;
 
         public function start(){
             if($this->status == false){
@@ -53,9 +52,6 @@
         }
 
         private function sanitizeRoots($metodo, $root){
-            if(!$this->isUsed){
-                
-            }
             $directory = explode("/", $_SERVER['PHP_SELF']);
             unset($directory[count($directory) - 1]);
             
