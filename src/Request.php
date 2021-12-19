@@ -9,9 +9,9 @@
 
         public function __construct($body, $params, $headers)
         {
-            $this->params = $params;
-            $this->body = $body;
-            $this->files = $_FILES;
-            $this->headers = $headers;
+            $this->params = json_decode(json_encode($params));
+            $this->body = json_decode(json_encode($body));
+            $this->files = json_decode(json_encode($_FILES));
+            $this->headers = json_decode(json_encode($headers));
         }
     }
