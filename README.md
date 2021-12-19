@@ -37,21 +37,21 @@ Codigo de ejemplo:
     //If you need allow petitions from javascript, use
     $api->cors();
     
-    $api->get("/imprimir", function(Request $req, Response $res){
-        $res->status(200)->send($req);
+    $api->get("/get/{idUser}", function(Request $req, Response $res){
+        $res->status(200)->send($req->params->idUser);
     });
     
-    $api->post("/imprimir", function(Request $req, Response $res){
+    $api->post("/add", function(Request $req, Response $res){
         //Get Files
-        $res->status(200)->send($req);
+        $res->status(200)->send($req->body->nameUser);
     });
 
-    $api->put("/imprimir/{idUsuario}", function(Request $req, Response $res){
-        $res->status(200)->send($req);
+    $api->put("/update/{idUser}", function(Request $req, Response $res){
+        $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
     });
 
-    $api->delete("/imprimir/{idUsuario}", function(Request $req, Response $res){
-        $res->status(200)->send($req);
+    $api->delete("/delete/{idUser}", function(Request $req, Response $res){
+        $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
     });
     
     //REQUIRED
@@ -64,7 +64,7 @@ Si necesitas obtener archivos subidos usa:
 
 ```php
     $api->post("/upload/folder/{idFolder}", function(Request $req, Response $res){
-        $res->status(200)->send($req->files);
+        $res->status(200)->send($req->files->img->name." - ".$req->params->idFolder);
     });
 ```
 
