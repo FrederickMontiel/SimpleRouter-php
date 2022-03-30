@@ -11,7 +11,7 @@
 
             http_response_code($status);
 
-            return new Response();
+            return $this;
         }
 
         public function send($object){

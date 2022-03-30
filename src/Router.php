@@ -10,16 +10,28 @@
         public function start(){
             if($this->status == false){
                 $res = new Response();
-                $res->status(200)->send(array(
+                $res->status(404)->send(array(
                     "code" => 0,
                     "message" => "The petition {{".$_SERVER['REQUEST_METHOD']."}} in this root not exists"
                 ));
             }
         }
 
-        public function cors($domain = "*", $methods = "*", $headers = "*"){
-            header("Access-Control-Allow-Origin: ".$domain);
-            header("Access-Control-Allow-Methods: ".$headers);
+        public function cors($domains = "*", $methods = "*", $headers = "*"){
+            if(is_array($domains)){
+                $domains = implode(", ", $domains);
+            }
+
+            if(is_array($methods)){
+                $methods = implode(", ", $methods);
+            }
+
+            if(is_array($headers)){
+                $headers = implode(", ", $headers);
+            }
+
+            header("Access-Control-Allow-Origin: ".$domains);
+            header("Access-Control-Allow-Methods: ".$methods);
             header("Access-Control-Allow-Headers: ".$headers);
         }
 
@@ -116,6 +128,19 @@
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_PUT);
                     $callback(new Request($_PUT, $req['params'], $req['headers']), new Response);
+                }else{
+                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                }
+            }
+        }
+
+        public function patch($root, $callback){
+            $sanitized = $this->sanitizeRoots("PATCH", $root);
+            if($sanitized != false){
+                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
+                if($this->input == false){
+                    parse_str(file_get_contents('php://input'), $_PATCH);
+                    $callback(new Request($_PATCH, $req['params'], $req['headers']), new Response);
                 }else{
                     $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
                 }
