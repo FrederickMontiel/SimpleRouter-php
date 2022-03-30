@@ -64,34 +64,38 @@
         }
 
         private function sanitizeRoots($metodo, $root){
-            $directory = explode("/", $_SERVER['PHP_SELF']);
-            unset($directory[count($directory) - 1]);
-            
-            $directory = implode("/", $directory);
-            $root = $directory.$root;
-            $uri = $_SERVER['REQUEST_URI'];
-            $uriDos = $_SERVER['REQUEST_URI'];
-            $method = $_SERVER['REQUEST_METHOD'];
+            $isCLI = (php_sapi_name() == 'cli');
 
-            if($uri[strlen($uri)-1] != "/"){
-                $uri .= "/";
-            }
-
-            if($uriDos[strlen($uriDos)-1] != "/"){
-                $uriDos .= "/";
-            }
-
-            if($root[strlen($root)-1] != "/"){
-                $root .= "/";
-            }
-
-            $regex = preg_replace("/\{(.*?)\}/", "(.*?)", str_replace("/", "\/", $root));
-
-            if($method == $metodo && count(explode("/", $root)) == count(explode("/", $uri)) && preg_match("/".$regex."$/im", $uriDos)){
+            if(!$isCLI){
+                $directory = explode("/", $_SERVER['PHP_SELF']);
+                unset($directory[count($directory) - 1]);
                 
-                return array("regex" => $regex, "uri" => $uriDos);
-            }else{
-                return false;
+                $directory = implode("/", $directory);
+                $root = $directory.$root;
+                $uri = $_SERVER['REQUEST_URI'];
+                $uriDos = $_SERVER['REQUEST_URI'];
+                $method = $_SERVER['REQUEST_METHOD'];
+    
+                if($uri[strlen($uri)-1] != "/"){
+                    $uri .= "/";
+                }
+    
+                if($uriDos[strlen($uriDos)-1] != "/"){
+                    $uriDos .= "/";
+                }
+    
+                if($root[strlen($root)-1] != "/"){
+                    $root .= "/";
+                }
+    
+                $regex = preg_replace("/\{(.*?)\}/", "(.*?)", str_replace("/", "\/", $root));
+    
+                if($method == $metodo && count(explode("/", $root)) == count(explode("/", $uri)) && preg_match("/".$regex."$/im", $uriDos)){
+                    
+                    return array("regex" => $regex, "uri" => $uriDos);
+                }else{
+                    return false;
+                }
             }
         }
 
