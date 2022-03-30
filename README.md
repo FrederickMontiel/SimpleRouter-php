@@ -29,7 +29,11 @@ Example code:
     $api = new Router();
     
     //If you need allow petitions from javascript, use
-    $api->cors();
+    $api->cors(
+        ["easyprojects.tech", "google.com"],
+        "*",
+        "*"
+    );
     
     $api->get("/get/{idUser}", function(Request $req, Response $res){
         $res->status(200)->send($req->params->idUser);
