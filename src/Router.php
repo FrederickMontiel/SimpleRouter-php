@@ -18,21 +18,25 @@
         }
 
         public function cors($domains = "*", $methods = "*", $headers = "*"){
-            if(is_array($domains)){
-                $domains = implode(", ", $domains);
-            }
+            $isCLI = (php_sapi_name() == 'cli');
 
-            if(is_array($methods)){
-                $methods = implode(", ", $methods);
+            if(!$isCLI){
+                if(is_array($domains)){
+                    $domains = implode(", ", $domains);
+                }
+    
+                if(is_array($methods)){
+                    $methods = implode(", ", $methods);
+                }
+    
+                if(is_array($headers)){
+                    $headers = implode(", ", $headers);
+                }
+    
+                header("Access-Control-Allow-Origin: ".$domains);
+                header("Access-Control-Allow-Methods: ".$methods);
+                header("Access-Control-Allow-Headers: ".$headers);
             }
-
-            if(is_array($headers)){
-                $headers = implode(", ", $headers);
-            }
-
-            header("Access-Control-Allow-Origin: ".$domains);
-            header("Access-Control-Allow-Methods: ".$methods);
-            header("Access-Control-Allow-Headers: ".$headers);
         }
 
         private function WriteRoot($root, $regex, $uri){
