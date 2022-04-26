@@ -53,7 +53,7 @@ Example code:
     });
     
     //DEPRECATED
-    $api->start();
+    //$api->start();
 ```
 
 Now if you need get Files Uploaded, use:
