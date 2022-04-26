@@ -52,7 +52,7 @@ Example code:
         $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
     });
     
-    //REQUIRED
+    //DEPRECATED
     $api->start();
 ```
 
