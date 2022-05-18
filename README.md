@@ -6,7 +6,7 @@ Install our package with composer:
 composer require easy-projects/simple-router
 ```
 
-You must redirect all requests to your main file with this .htaccess or as you can see in the example folder "example".
+You must redirect all requests to your main file with this .htaccess
 
 ```txt
 RewriteEngine On
