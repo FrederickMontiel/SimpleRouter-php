@@ -176,4 +176,60 @@
                 $callback(true, null);
             }
         }
+
+        public function listFolderFiles($dir){
+            if(file_exists($dir)){
+                $ffs = scandir($dir);
+            
+                unset($ffs[array_search('.', $ffs, true)]);
+                unset($ffs[array_search('..', $ffs, true)]);
+            
+                if (count($ffs) < 1)
+                    return;
+
+                foreach($ffs as $ff){
+                    if(is_dir($dir.'/'.$ff)){
+                        $this->listFolderFiles($dir.'/'.$ff);
+                    }else{
+                        $fileExt = explode(".", $ff);
+                        
+                        if(end($fileExt) == "php"){
+                            require_once $dir.'/'.$ff;
+                        }
+                    }
+                }
+            }
+        }
+
+        public function listFiles($dir){
+            if(file_exists($dir)){
+                $ffs = scandir($dir);
+            
+                unset($ffs[array_search('.', $ffs, true)]);
+                unset($ffs[array_search('..', $ffs, true)]);
+            
+                if (count($ffs) < 1)
+                    return;
+
+                foreach($ffs as $ff){
+                    if(is_dir($dir.'/'.$ff)){
+                        //$this->listFiles($dir.'/'.$ff);
+                    }else{
+                        $fileExt = explode(".", $ff);
+                        
+                        if(end($fileExt) == "php"){
+                            require_once $dir.'/'.$ff;
+                        }
+                    }
+                }
+            }
+        }
+
+        public function import($path){
+            $this->listFiles($path);
+        }
+
+        public function importAll($path){
+            $this->listFolderFiles($path);
+        }
     }
