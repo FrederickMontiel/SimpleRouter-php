@@ -49,7 +49,7 @@ Example code:
             roots
                 - UsersRoot.php
         
-        Require all files php
+        Require all files php from controllers, implicits, models and roots
     */
     $router->importAll("./app");
 
