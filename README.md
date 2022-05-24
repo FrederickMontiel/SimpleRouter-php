@@ -26,29 +26,66 @@ Example code:
     use EasyProjects\SimpleRouter\Request as Request;
     use EasyProjects\SimpleRouter\Response as Response;
 
-    $api = new Router();
+    $router = new Router();
     
     //If you need allow petitions from javascript, use
-    $api->cors(
+    $router->cors(
         ["easyprojects.tech", "google.com"],
         "*",
         "*"
     );
+
+    /*
+        Require all files from folder to final subfolder
+        
+        Then if you have:
+        app
+            controllers
+                - UsersController.php
+                Implicits
+                    - UserImplicit.php
+            models
+                - UsersModel.php
+            roots
+                - UsersRoot.php
+        
+        Require all files php
+    */
+    $router->importAll("./app");
+
+    /*
+        Require all files from folder
+        
+        If you have:
+        app
+            controllers
+                - UsersController.php
+                Implicits
+                    - UserImplicit.php
+            models
+                - UsersModel.php
+            roots
+                - UsersRoot.php
+            - home.php
+        
+        Require all files php in app, only home.php
+    */
+    $router->import("./configs");
     
-    $api->get("/get/{idUser}", function(Request $req, Response $res){
+    $router->get("/get/{idUser}", function(Request $req, Response $res){
         $res->status(200)->send($req->params->idUser);
     });
     
-    $api->post("/add", function(Request $req, Response $res){
+    $router->post("/add", function(Request $req, Response $res){
         //Get Files
         $res->status(200)->send($req->body->nameUser);
     });
 
-    $api->put("/update/{idUser}", function(Request $req, Response $res){
+    $router->put("/update/{idUser}", function(Request $req, Response $res){
         $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
     });
 
-    $api->delete("/delete/{idUser}", function(Request $req, Response $res){
+    $router->delete("/delete/{idUser}", function(Request $req, Response $res){
         $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
     });
     
@@ -59,7 +96,7 @@ Example code:
 Now if you need get Files Uploaded, use:
 
 ```php
-    $api->post("/upload/folder/{idFolder}", function(Request $req, Response $res){
+    $router->post("/upload/folder/{idFolder}", function(Request $req, Response $res){
         $res->status(200)->send($req->files->img->name." - ".$req->params->idFolder);
     });
 ```
