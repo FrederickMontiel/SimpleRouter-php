@@ -51,7 +51,7 @@ Example code:
         
         Require all files php from controllers, implicits, models and roots
     */
-    $router->importAll("./app");
+    $router->importAll("./app"); //If you dont use namespaces you need to use this
 
     /*
         Require all files from folder
@@ -70,7 +70,17 @@ Example code:
         
         Require all files php in app, only home.php
     */
-    $router->import("./configs");
+    $router->import("./configs"); //If you dont use namespaces you need to use this
+    
+    /* New Autoload! */
+    $router->autoload(); 
+    /*
+        Import only the packages and classes that you are using.
+
+        Improves application loading performance.
+
+        For this you need to use "namespace".
+    */
     
     $router->get("/get/{idUser}", function(Request $req, Response $res){
         $res->status(200)->send($req->params->idUser);
