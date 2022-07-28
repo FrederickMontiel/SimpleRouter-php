@@ -232,4 +232,11 @@
         public function importAll($path){
             $this->listFolderFiles($path);
         }
+        
+        public function autoload(){
+            spl_autoload_register(function($class){
+                $url = str_replace("\\", "/", $class.".php");
+                require_once $url;
+            });
+        }
     }
