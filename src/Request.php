@@ -2,10 +2,10 @@
     namespace EasyProjects\SimpleRouter;
 
     class Request{
-        public static $params;
-        public static $body;
-        public static $files;
-        public static $headers;
+        public $params;
+        public $body;
+        public $files;
+        public $headers;
 
         public function __construct($body, $params, $headers)
         {
