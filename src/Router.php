@@ -236,7 +236,9 @@
         public function autoload(){
             spl_autoload_register(function($class){
                 $url = str_replace("\\", "/", $class.".php");
-                require_once $url;
+                if(file_exists($url)){
+                    require_once $url;
+                }
             });
         }
     }
