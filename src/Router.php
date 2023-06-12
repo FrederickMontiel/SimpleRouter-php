@@ -4,39 +4,26 @@
     use Exception;
 
     class Router{
-        private $status = false;
+        private static $status = false;
         private $input = false;
 
+        public function __construct(
+            private Cors $cors = new Cors()
+        ){
+            
+        }
+
         public function start(){
-            if($this->status == false){
+            if(self::$status == false && php_sapi_name() != 'cli'){
                 $res = new Response();
-                $res->status(404)->send(array(
-                    "code" => 0,
+                $res->status(404)->send([
                     "message" => "The petition {{".$_SERVER['REQUEST_METHOD']."}} in this root not exists"
-                ));
+                ]);
             }
         }
 
-        public function cors($domains = "*", $methods = "*", $headers = "*"){
-            $isCLI = (php_sapi_name() == 'cli');
-
-            if(!$isCLI){
-                if(is_array($domains)){
-                    $domains = implode(", ", $domains);
-                }
-    
-                if(is_array($methods)){
-                    $methods = implode(", ", $methods);
-                }
-    
-                if(is_array($headers)){
-                    $headers = implode(", ", $headers);
-                }
-    
-                header("Access-Control-Allow-Origin: ".$domains);
-                header("Access-Control-Allow-Methods: ".$methods);
-                header("Access-Control-Allow-Headers: ".$headers);
-            }
+        public function cors() : Cors{
+            return $this->cors;
         }
 
         private function WriteRoot($root, $regex, $uri){
@@ -62,7 +49,7 @@
                 }catch(Exception $e){}
             }
 
-            $this->status = true;
+            self::$status = true;
             
             return $req;
         }
@@ -240,5 +227,45 @@
                     require_once $url;
                 }
             });
+        }
+
+        //Coming Soon
+        private function prepareAssets($path="./assets"){
+            $path .= "/";
+            //check route if is in /assets/
+            //echo $_SERVER['REQUEST_URI'];
+            //$newPath = str_replace("/", "\/", $path);
+            if(preg_match_all("/\/assets\/(.*)/im", $_SERVER['REQUEST_URI'], $values)){
+                //var_dump($values);
+                
+                self::$status = true;
+                //filetype($path.$values[1][0])
+                $firstType = explode("/", mime_content_type($path.$values[1][0]))[0];
+                $secondType = explode(".", $values[1][0]);
+                $secondType = end($secondType);
+
+                //echo $secondType;
+
+                if($secondType == "js"){
+                    /*$firstType = "application";
+                    $secondType = "javascript; charset=utf-8";*/
+                    $firstType = "text";
+                    $secondType = "javascript";
+                    
+                    header("Content-type: application/javascript");
+                
+                }else{
+                    header("Content-type: ".$firstType."/".$secondType);
+                }
+                    
+                
+
+                //if(){
+                   
+                //}
+                echo  file_get_contents($path.$values[1][0]);
+                
+                //exit;
+            }
         }
     }
