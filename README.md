@@ -29,11 +29,11 @@ Example code:
     $router = new Router();
     
     //If you need allow petitions from javascript, use
-    $router->cors(
-        ["easyprojects.tech", "google.com"],
-        "*",
-        "*"
-    );
+
+    $router->cors()->setAllowedOrigins("easyprojects.tech", "localhost");
+    $router->cors()->setAllowedMethods("GET", "POST", "PUT", "DELETE");
+    $router->cors()->setAllowedHeaders("Content-Type", "Authorization");
+
 
     /*
         Require all files from folder to final subfolder
