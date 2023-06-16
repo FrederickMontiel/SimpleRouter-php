@@ -1,4 +1,8 @@
-# SimpleRouter-php
+# SimpleRouter
+
+See full example project:
+[https://github.com/FrederickMontiel/CRUD-SimpleRouter-php
+](https://github.com/FrederickMontiel/CRUD-SimpleRouter-php)
 
 Install our package with composer:
 
@@ -19,96 +23,56 @@ Example code:
 
 ```php
 <?php
-    //Include composer
     include_once __DIR__."/vendor/autoload.php";
 
     use EasyProjects\SimpleRouter\Router as Router;
-    use EasyProjects\SimpleRouter\Request as Request;
-    use EasyProjects\SimpleRouter\Response as Response;
 
     $router = new Router();
     
-    //If you need allow petitions from javascript, use
-
+    //Cors rules for the broser
     $router->cors()->setAllowedOrigins("easyprojects.tech", "localhost");
     $router->cors()->setAllowedMethods("GET", "POST", "PUT", "DELETE");
     $router->cors()->setAllowedHeaders("Content-Type", "Authorization");
-
-
-    /*
-        Require all files from folder to final subfolder
-        
-        Then if you have:
-        app
-            controllers
-                - UsersController.php
-                Implicits
-                    - UserImplicit.php
-            models
-                - UsersModel.php
-            roots
-                - UsersRoot.php
-        
-        Require all files php from controllers, implicits, models and roots
-    */
-    $router->importAll("./app"); //If you dont use namespaces you need to use this
-
-    /*
-        Require all files from folder
-        
-        If you have:
-        app
-            controllers
-                - UsersController.php
-                Implicits
-                    - UserImplicit.php
-            models
-                - UsersModel.php
-            roots
-                - UsersRoot.php
-            - home.php
-        
-        Require all files php in app, only home.php
-    */
-    $router->import("./configs"); //If you dont use namespaces you need to use this
     
-    /* New Autoload! */
-    $router->autoload(); 
     /*
         Import only the packages and classes that you are using.
 
         Improves application loading performance.
 
-        For this you need to use "namespace".
+        For this you need to gestione your project by packages.
     */
+    $router->autoload(); 
     
-    $router->get("/get/{idUser}", function(Request $req, Response $res){
-        $res->status(200)->send($req->params->idUser);
-    });
+    //Routes
+    $router->get("/get/{idUser}", 
+        //Middlewares for example
+        fn () => Middleware::auth(),
+        //Controller
+        fn () => Router::$response->status(200)->send(Router::$request->params->idUser)
+    );
     
-    $router->post("/add", function(Request $req, Response $res){
-        //Get Files
-        $res->status(200)->send($req->body->nameUser);
-    });
+    $router->post("/add", 
+        fn () => Router::$response->status(200)->send(Router::$request->body->nameUser)
+    );
 
-    $router->put("/update/{idUser}", function(Request $req, Response $res){
-        $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
-    });
+    $router->put("/update/{idUser}", 
+        fn () => Router::$response->status(200)->send(Router::$request->params->idUser." - ".Router::$request->body->nameUser)
+    );
 
-    $router->delete("/delete/{idUser}", function(Request $req, Response $res){
-        $res->status(200)->send($req->params->idUser." - ".$req->body->nameUser);
-    });
+    $router->delete("/delete/{idUser}", 
+        fn () => Router::$response->status(200)->send(Router::$request->params->idUser." - ".Router::$request->body->nameUser)
+    );
     
-    //DEPRECATED
-    //$api->start();
+    //Use only in development
+    $api->start();
 ```
 
 Now if you need get Files Uploaded, use:
 
 ```php
-    $router->post("/upload/folder/{idFolder}", function(Request $req, Response $res){
-        $res->status(200)->send($req->files->img->name." - ".$req->params->idFolder);
-    });
+    $router->post("/upload/folder/{idFolder}", 
+        fn () => Router::$response->status(200)->send(Router::$request->files->img->name." - ".Router::$request->params->idFolder)
+    );
 ```
 
 ![image](https://user-images.githubusercontent.com/86737117/144947334-5f09b150-5ec4-481c-9dfd-bc09592c7250.png)
