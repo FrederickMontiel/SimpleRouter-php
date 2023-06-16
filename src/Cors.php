@@ -13,7 +13,7 @@ class Cors{
             else
                 header("Access-Control-Allow-Origin: ".implode(", ", $origins));
 
-            return self::class;
+            return new Cors();
         }catch(\Exception $e){
             return false;
         }
@@ -26,7 +26,7 @@ class Cors{
             else
                 header("Access-Control-Allow-Methods: ".implode(", ", $methods));
 
-            return self::class;
+            return new Cors();
         }catch(\Exception $e){
             return false;
         }
@@ -40,7 +40,7 @@ class Cors{
             else
                 header("Access-Control-Allow-Headers: ".implode(", ", $headers));
 
-            return self::class;
+            return new Cors();
         }catch(\Exception $e){
             return false;
         }

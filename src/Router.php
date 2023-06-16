@@ -7,11 +7,12 @@
         private static $status = false;
         private $input = false;
 
+        public static Request $request;
+        public static Response $response;
+
         public function __construct(
-            private Cors $cors = new Cors()
-        ){
-            
-        }
+            private ?Cors $cors = new Cors(),
+        ){}
 
         public function start(){
             if(self::$status == false && php_sapi_name() != 'cli'){
@@ -59,6 +60,11 @@
 
             if(!$isCLI){
                 $directory = explode("/", $_SERVER['PHP_SELF']);
+
+                if(!strpos($directory[count($directory) - 1], ".php")){
+                    $directory = ["index.php"];
+                }
+
                 unset($directory[count($directory) - 1]);
                 
                 $directory = implode("/", $directory);
@@ -90,68 +96,100 @@
             }
         }
 
-        public function get($root, $callback){
+        public function get($root, callable ...$callbacks){
             $sanitized = $this->sanitizeRoots("GET", $root);
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
+
+                Router::$response = new Response;
+
                 if($this->input == false){
-                    $callback(new Request($_GET, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($_GET, $req['params'], $req['headers']);
                 }else{
-                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                }
+
+                foreach ($callbacks as $callback) {
+                    $callback(Router::$request, Router::$response);
                 }
             }
         }
 
-        public function post($root, $callback){
+        public function post($root, callable ...$callbacks){
             $sanitized = $this->sanitizeRoots("POST", $root);
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
                 $req['body'] = $_POST;
 
+                Router::$response = new Response;
+
                 if($this->input == false){
-                    $callback(new Request($_POST, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($_POST, $req['params'], $req['headers']);
                 }else{
-                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                }
+
+                foreach ($callbacks as $callback) {
+                    $callback(Router::$request, Router::$response);
                 }
             }
         }
 
-        public function put($root, $callback){
+        public function put($root, callable ...$callbacks){
             $sanitized = $this->sanitizeRoots("PUT", $root);
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
+                Router::$response = new Response;
+
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_PUT);
-                    $callback(new Request($_PUT, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($_PUT, $req['params'], $req['headers']);
                 }else{
-                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                }
+
+                foreach ($callbacks as $callback) {
+                    $callback(Router::$request, Router::$response);
                 }
             }
         }
 
-        public function patch($root, $callback){
-            $sanitized = $this->sanitizeRoots("PATCH", $root);
-            if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-                if($this->input == false){
-                    parse_str(file_get_contents('php://input'), $_PATCH);
-                    $callback(new Request($_PATCH, $req['params'], $req['headers']), new Response);
-                }else{
-                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
-                }
-            }
-        }
-
-        public function delete($root, $callback){
+        public function delete($root, callable ...$callbacks){
             $sanitized = $this->sanitizeRoots("DELETE", $root);
             if($sanitized != false){
                 $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
 
+                Router::$response = new Response;
+                
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_DELETE);
-                    $callback(new Request($_DELETE, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($_DELETE, $req['params'], $req['headers']);
                 }else{
-                    $callback(new Request($this->input, $req['params'], $req['headers']), new Response);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                }
+
+                foreach ($callbacks as $callback) {
+                    $callback(Router::$request, Router::$response);
+                }
+            }
+        }
+
+        public function patch($root, callable ...$callbacks){
+            $sanitized = $this->sanitizeRoots("PATCH", $root);
+            if($sanitized != false){
+                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
+
+                Router::$response = new Response;
+
+                if($this->input == false){
+                    parse_str(file_get_contents('php://input'), $_PATCH);
+                    Router::$request = new Request($_PATCH, $req['params'], $req['headers']);
+                }else{
+                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                }
+
+                foreach ($callbacks as $callback) {
+                    $callback(Router::$request, Router::$response);
                 }
             }
         }
@@ -229,43 +267,60 @@
             });
         }
 
+        public function streamFile($path, $contentType = 'application/octet-stream') {
+            if (file_exists($path)) {
+                header('Content-Type: ' . $contentType);
+                header('Content-Length: ' . filesize($path));
+                header('Content-Disposition: attachment; filename="' . basename($path) . '"');
+                readfile($path);
+                exit;
+            } else {
+                http_response_code(404);
+                die('File not found');
+            }
+        }
+
         //Coming Soon
-        private function prepareAssets($path="./assets"){
+        public function prepareAssets($path="./assets"){
             $path .= "/";
-            //check route if is in /assets/
-            //echo $_SERVER['REQUEST_URI'];
-            //$newPath = str_replace("/", "\/", $path);
             if(preg_match_all("/\/assets\/(.*)/im", $_SERVER['REQUEST_URI'], $values)){
                 //var_dump($values);
                 
                 self::$status = true;
                 //filetype($path.$values[1][0])
-                $firstType = explode("/", mime_content_type($path.$values[1][0]))[0];
-                $secondType = explode(".", $values[1][0]);
-                $secondType = end($secondType);
+
 
                 //echo $secondType;
 
-                if($secondType == "js"){
-                    /*$firstType = "application";
-                    $secondType = "javascript; charset=utf-8";*/
-                    $firstType = "text";
-                    $secondType = "javascript";
-                    
-                    header("Content-type: application/javascript");
-                
-                }else{
-                    header("Content-type: ".$firstType."/".$secondType);
-                }
-                    
-                
+                if(file_exists($path.$values[1][0])){
+                    /*$firstType = explode("/", mime_content_type($path.$values[1][0]))[0];
+                    $secondType = explode(".", $values[1][0]);
+                    $secondType = end($secondType);*/
 
-                //if(){
-                   
-                //}
-                echo  file_get_contents($path.$values[1][0]);
-                
-                //exit;
+                    //. mime_content_type($path.$values[1][0])
+                    header('Content-Type: '.mime_content_type($path.$values[1][0]) );
+                    header('Content-Length: ' . filesize($path.$values[1][0]));
+                    header('Content-Disposition: attachment; filename="' . basename($path.$values[1][0]) . '"');
+                    readfile($path.$values[1][0]);
+                    exit;
+
+                    /*if($secondType == "js"){
+                        $firstType = "text";
+                        $secondType = "javascript";
+                        
+                        header("Content-type: application/javascript");
+                    
+                    }else{
+                        header("Content-type: ".$firstType."/".$secondType);
+                    }
+
+                    echo file_get_contents($path.$values[1][0]);
+
+                    exit;*/
+                }else{
+                    $response = new Response();
+                    $response->status(404)->send(["error" => "File not found."]);
+                }
             }
         }
     }
