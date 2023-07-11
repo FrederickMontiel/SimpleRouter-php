@@ -3,17 +3,19 @@
 
     class Request{
         public $params;
+        public $query;
         public $body;
         public $files;
         public $headers;
 
-        public function __construct($body, $params, $headers)
+        public function __construct($body, $params, $headers, $query)
         {
             $this->params = json_decode(json_encode($this->decodeUrlData($params)));
             //$this->params = json_decode(json_encode($params));
             $this->body = json_decode(json_encode($body));
             $this->files = json_decode(json_encode(self::orderFiles($_FILES)));
             $this->headers = json_decode(json_encode($headers));
+            $this->query = json_decode(json_encode($query));
         }
         
         public static function orderFiles($files){

@@ -61,6 +61,8 @@
             if(!$isCLI){
                 $directory = explode("/", $_SERVER['PHP_SELF']);
 
+                //echo json_encode($directory);
+
                 if(!strpos($directory[count($directory) - 1], ".php")){
                     $directory = ["index.php"];
                 }
@@ -69,8 +71,8 @@
                 
                 $directory = implode("/", $directory);
                 $root = $directory.$root;
-                $uri = $_SERVER['REQUEST_URI'];
-                $uriDos = $_SERVER['REQUEST_URI'];
+                $uri = preg_replace("/\?.*/", "", $_SERVER['REQUEST_URI']);
+                $uriDos = $uri;
                 $method = $_SERVER['REQUEST_METHOD'];
     
                 if($uri[strlen($uri)-1] != "/"){
@@ -104,9 +106,9 @@
                 Router::$response = new Response;
 
                 if($this->input == false){
-                    Router::$request = new Request($_GET, $req['params'], $req['headers']);
+                    Router::$request = new Request($_GET, $req['params'], $req['headers'], $_REQUEST);
                 }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
 
                 foreach ($callbacks as $callback) {
@@ -124,9 +126,9 @@
                 Router::$response = new Response;
 
                 if($this->input == false){
-                    Router::$request = new Request($_POST, $req['params'], $req['headers']);
+                    Router::$request = new Request($_POST, $req['params'], $req['headers'], $_REQUEST);
                 }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
 
                 foreach ($callbacks as $callback) {
@@ -143,9 +145,9 @@
 
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_PUT);
-                    Router::$request = new Request($_PUT, $req['params'], $req['headers']);
+                    Router::$request = new Request($_PUT, $req['params'], $req['headers'], $_REQUEST);
                 }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
 
                 foreach ($callbacks as $callback) {
@@ -163,9 +165,9 @@
                 
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_DELETE);
-                    Router::$request = new Request($_DELETE, $req['params'], $req['headers']);
+                    Router::$request = new Request($_DELETE, $req['params'], $req['headers'], $_REQUEST);
                 }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
 
                 foreach ($callbacks as $callback) {
@@ -183,9 +185,9 @@
 
                 if($this->input == false){
                     parse_str(file_get_contents('php://input'), $_PATCH);
-                    Router::$request = new Request($_PATCH, $req['params'], $req['headers']);
+                    Router::$request = new Request($_PATCH, $req['params'], $req['headers'], $_REQUEST);
                 }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers']);
+                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
 
                 foreach ($callbacks as $callback) {
