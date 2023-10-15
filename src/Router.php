@@ -14,12 +14,12 @@
             private ?Cors $cors = new Cors(),
         ){}
 
-        public function start(){
+        private function start(){
             if(self::$status == false && php_sapi_name() != 'cli'){
                 $res = new Response();
-                $res->status(404)->send([
-                    "message" => "The petition {{".$_SERVER['REQUEST_METHOD']."}} in this root not exists"
-                ]);
+                $res->status(404)->send(
+                    //"message" => "The request of type {{".$_SERVER['REQUEST_METHOD']."}} does not exist in this route."
+                );
             }
         }
 
@@ -27,7 +27,7 @@
             return $this->cors;
         }
 
-        private function WriteRoot($root, $regex, $uri){
+        private function writeRoute($root, $regex, $uri){
             $req = array();
             preg_match_all("/\{(.*?)\}/", $root, $params);
             $paramsNames = $params[1];
@@ -47,7 +47,9 @@
             if(isset($req['headers']['Content-Type']) == "application/json"){
                 try{
                     $this->input = json_decode(file_get_contents("php://input"), true);
-                }catch(Exception $e){}
+                }catch(Exception $e){
+                    $this->input = [];
+                }
             }
 
             self::$status = true;
@@ -55,7 +57,7 @@
             return $req;
         }
 
-        private function sanitizeRoots($metodo, $root){
+        private function sanitizeRoute($metodo, $root){
             $isCLI = (php_sapi_name() == 'cli');
 
             if(!$isCLI){
@@ -98,15 +100,38 @@
             }
         }
 
-        public function get($root, callable ...$callbacks){
-            $sanitized = $this->sanitizeRoots("GET", $root);
+        private function processRequest($method, $root, callable ...$callbacks) {
+            $sanitized = $this->sanitizeRoute($method, $root);
             if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
+                $req = $this->writeRoute($root, $sanitized['regex'], $sanitized['uri']);
 
                 Router::$response = new Response;
 
                 if($this->input == false){
-                    Router::$request = new Request($_GET, $req['params'], $req['headers'], $_REQUEST);
+                    $dataPetition = null;
+
+                    switch ($method) {
+                        case 'GET':
+                            $dataPetition = $_GET;
+                            break;
+                        case 'POST':
+                            $dataPetition = $_POST;
+                            break;
+                        case 'PUT':
+                            parse_str(file_get_contents('php://input'), $_PUT);
+                            $dataPetition = $_PUT;
+                            break;
+                        case 'DELETE':
+                            parse_str(file_get_contents('php://input'), $_DELETE);
+                            $dataPetition = $_DELETE;
+                            break;
+                        case 'PATCH':
+                            parse_str(file_get_contents('php://input'), $_PATCH);
+                            break;
+
+                    }
+
+                    Router::$request = new Request($dataPetition, $req['params'], $req['headers'], $_REQUEST);
                 }else{
                     Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
                 }
@@ -116,87 +141,29 @@
                 }
             }
         }
-
-        public function post($root, callable ...$callbacks){
-            $sanitized = $this->sanitizeRoots("POST", $root);
-            if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-                $req['body'] = $_POST;
-
-                Router::$response = new Response;
-
-                if($this->input == false){
-                    Router::$request = new Request($_POST, $req['params'], $req['headers'], $_REQUEST);
-                }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
-                }
-
-                foreach ($callbacks as $callback) {
-                    $callback(Router::$request, Router::$response);
-                }
-            }
+        
+        public function get($root, callable ...$callbacks) {
+            $this->processRequest("GET", $root, ...$callbacks);
         }
-
-        public function put($root, callable ...$callbacks){
-            $sanitized = $this->sanitizeRoots("PUT", $root);
-            if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-                Router::$response = new Response;
-
-                if($this->input == false){
-                    parse_str(file_get_contents('php://input'), $_PUT);
-                    Router::$request = new Request($_PUT, $req['params'], $req['headers'], $_REQUEST);
-                }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
-                }
-
-                foreach ($callbacks as $callback) {
-                    $callback(Router::$request, Router::$response);
-                }
-            }
+        
+        public function post($root, callable ...$callbacks) {
+            $this->processRequest("POST", $root, ...$callbacks);
         }
-
-        public function delete($root, callable ...$callbacks){
-            $sanitized = $this->sanitizeRoots("DELETE", $root);
-            if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-
-                Router::$response = new Response;
-                
-                if($this->input == false){
-                    parse_str(file_get_contents('php://input'), $_DELETE);
-                    Router::$request = new Request($_DELETE, $req['params'], $req['headers'], $_REQUEST);
-                }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
-                }
-
-                foreach ($callbacks as $callback) {
-                    $callback(Router::$request, Router::$response);
-                }
-            }
+        
+        public function put($root, callable ...$callbacks) {
+            $this->processRequest("PUT", $root, ...$callbacks);
         }
-
-        public function patch($root, callable ...$callbacks){
-            $sanitized = $this->sanitizeRoots("PATCH", $root);
-            if($sanitized != false){
-                $req = $this->WriteRoot($root, $sanitized['regex'], $sanitized['uri']);
-
-                Router::$response = new Response;
-
-                if($this->input == false){
-                    parse_str(file_get_contents('php://input'), $_PATCH);
-                    Router::$request = new Request($_PATCH, $req['params'], $req['headers'], $_REQUEST);
-                }else{
-                    Router::$request = new Request($this->input, $req['params'], $req['headers'], $_REQUEST);
-                }
-
-                foreach ($callbacks as $callback) {
-                    $callback(Router::$request, Router::$response);
-                }
-            }
+        
+        public function delete($root, callable ...$callbacks) {
+            $this->processRequest("DELETE", $root, ...$callbacks);
         }
+        
+        public function patch($root, callable ...$callbacks) {
+            $this->processRequest("PATCH", $root, ...$callbacks);
+        }
+        
 
-        public function WriteRootRegex($regex, $callback){
+        public function writeRouteRegex($regex, $callback){
             if(preg_match($regex, $_SERVER['REQUEST_URI'], $matches)){
                 $callback(false, $matches);
             }else{
@@ -324,5 +291,10 @@
                     $response->status(404)->send(["error" => "File not found."]);
                 }
             }
+        }
+
+        public function __destruct()
+        {
+            $this->start();
         }
     }
