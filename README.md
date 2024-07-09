@@ -29,7 +29,7 @@ Example code:
 
     $router = new Router();
     
-    //Cors rules for the broser
+    //Cors rules for the browser
     $router->cors()->setAllowedOrigins("easyprojects.tech", "localhost");
     $router->cors()->setAllowedMethods("GET", "POST", "PUT", "DELETE");
     $router->cors()->setAllowedHeaders("Content-Type", "Authorization");
