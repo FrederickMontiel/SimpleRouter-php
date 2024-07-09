@@ -71,7 +71,7 @@
                 
                 $directory = implode("/", $directory);
                 $root = $directory.$root;
-                $uri = preg_replace("/\?.*/", "", $_SERVER['REQUEST_URI']);
+                $uri = preg_replace("/\?.*/", "", urldecode($_SERVER['REQUEST_URI']));
                 $uriDos = $uri;
                 $method = $_SERVER['REQUEST_METHOD'];
     
