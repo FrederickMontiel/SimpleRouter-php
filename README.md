@@ -28,13 +28,8 @@ Example code:
     use EasyProjects\SimpleRouter\Router as Router;
 
     $router = new Router();
-    
-    //Cors rules for the browser
-    $router->cors()->setAllowedOrigins("easyprojects.tech", "localhost");
-    $router->cors()->setAllowedMethods("GET", "POST", "PUT", "DELETE");
-    $router->cors()->setAllowedHeaders("Content-Type", "Authorization");
-    
-    /*
+
+     /*
         Import only the packages and classes that you are using.
 
         Improves application loading performance.
@@ -42,7 +37,12 @@ Example code:
         For this you need to gestione your project by packages.
     */
     $router->autoload(); 
-    
+
+    //Cors rules for the browser
+    $router->cors()->setAllowedOrigins("easyprojects.tech", "localhost");
+    $router->cors()->setAllowedMethods("GET", "POST", "PUT", "DELETE");
+    $router->cors()->setAllowedHeaders("Content-Type", "Authorization");
+
     //Routes
     $router->get("/get/{idUser}", 
         //Middlewares for example
