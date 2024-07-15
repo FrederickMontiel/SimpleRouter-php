@@ -157,7 +157,7 @@ Solo servirá para devolver información.
 ### POST
 `https://easyprojects.tech/Category`
 
-Solo servirá para agregar información a la base dedatos y subir archivos al servidor o algun otro servicio que se esté usando.
+Solo servirá para agregar información a la base de datos y subir archivos al servidor o algun otro servicio que se esté usando.
 
 Puede obtener archivos con el siguiente `Router::$request->files`, se puede usar `Router::$request->files->archivo` para obtener el archivo subido con la key archivo y asi secuencialmente. 
 
