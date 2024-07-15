@@ -114,7 +114,7 @@ Imagina que alguien tiene intenciones maliciosas y trata de hacer peticiones a t
 Pues las Reglas Cors(Cors rules) previene esto mismo,
 
 ### $router->cors()->setAllowedOrigins();
-El metodo `$router->cors()->setAllowedOrigins` permite decirle al navegador del cliente, "Si estan haciendo peticiones desde estos dominios, dejalos pasar y haz la petición".
+El metodo `$router->cors()->setAllowedOrigins` permite decirle al navegador del cliente, "Si estan enviando una petición desde estos dominios, dejalos pasar y sigue ejecutando todo lo demás.".
 
 La cantidad de parametros son infinitos, asi que puedes agregar infinitos dominios.
 
@@ -157,7 +157,7 @@ Solo servirá para devolver información.
 ### POST
 `https://easyprojects.tech/Category`
 
-Solo servirá para agregar información y subir archivos.
+Solo servirá para agregar información a la base dedatos y subir archivos al servidor o algun otro servicio que se esté usando.
 
 Puede obtener archivos con el siguiente `Router::$request->files`, se puede usar `Router::$request->files->archivo` para obtener el archivo subido con la key archivo y asi secuencialmente. 
 
